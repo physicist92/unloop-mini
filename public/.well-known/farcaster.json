@@ -1,0 +1,15 @@
+{
+    "name": "Farcaster Unloop Tracker",
+    "description": "Track who follows you and who doesn’t on Farcaster.",
+    "url": "https://unloop-mini.vercel.app/",
+    "icon_url": "https://unloop-mini.vercel.app/icon.png",
+    "developer": {
+        "name": "0xSedat",
+        "url": "https://github.com/physicist92"
+    },
+    "app": {
+        "category": "social",
+        "permissions": [],
+        "platforms": [ "web" ]
+    }
+}
