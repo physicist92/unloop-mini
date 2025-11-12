@@ -1,6 +1,6 @@
 {
     "name": "Farcaster Unloop Tracker",
-    "description": "Track who follows you and who doesn’t on Farcaster.",
+    "description": "Track who follows you and who doesnâ€™t on Farcaster.",
     "url": "https://unloop-mini.vercel.app/",
     "icon_url": "https://unloop-mini.vercel.app/icon.png",
     "developer": {
@@ -12,4 +12,11 @@
         "permissions": [],
         "platforms": [ "web" ]
     }
+}
+{
+  "accountAssociation": {
+    "header": "eyJmaWQiOjE5MjY3LCJ0eXBlIjoiYXV0aCIsImtleSI6IjB4ODk3MjVCNTQ5NjVjNzA2MTAwQTJCMjRmNzhBRWMyNjhBREMyNUQzQiJ9",
+    "payload": "eyJkb21haW4iOiJ1bmxvb3AtbWluaS52ZXJjZWwuYXBwIn0",
+    "signature": "AXULQGkUQVgRbgimszAC9ceZjUGvuX5F/gAbU2hwwf9zwgPEwWf6akWlQPmalfdmJwtuVkMnBd5nvrt8+DkrfBs="
+  }
 }
