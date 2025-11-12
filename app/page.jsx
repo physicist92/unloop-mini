@@ -1,38 +1,39 @@
 'use client';
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
+import { actions } from '@farcaster/miniapp-sdk';
 
 export default function Home() {
+  const [ready, setReady] = useState(false);
   const [fid, setFid] = useState('19267');
   const [stats, setStats] = useState({ followers: 0, following: 0 });
   const [notFollowingBack, setNotFollowingBack] = useState([]);
   const [theyDontFollow, setTheyDontFollow] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [ready, setReady] = useState(false);
 
-  // ✅ Farcaster Frame SDK - delayed ready()
+  // ✅ Farcaster Mini App SDK initialization
   useEffect(() => {
-    const initFrame = async () => {
+    const initMiniApp = async () => {
       try {
-        const { actions } = await import("@farcaster/frame-sdk");
+        console.log("🔄 Initializing Farcaster Mini App SDK...");
 
+        // Farcaster sandbox yüklenince ready çağrılır
         const handleReady = () => {
-          console.log("✅ Farcaster frame loaded, calling actions.ready()");
           actions.ready();
+          console.log("✅ Mini App is ready!");
           setReady(true);
         };
 
-        if (document.readyState === "complete") {
-          handleReady();
-        } else {
+        if (document.readyState === "complete") handleReady();
+        else {
           window.addEventListener("load", handleReady);
           return () => window.removeEventListener("load", handleReady);
         }
       } catch (err) {
-        console.warn("⚠️ Frame SDK load error:", err);
+        console.error("❌ SDK initialization failed:", err);
       }
     };
 
-    if (typeof window !== "undefined") initFrame();
+    if (typeof window !== "undefined") initMiniApp();
   }, []);
 
   // ✅ Tüm takipçileri çekme fonksiyonu
@@ -70,6 +71,7 @@ export default function Home() {
     return allUsers;
   };
 
+  // ✅ Karşılaştırma fonksiyonu
   const checkData = async () => {
     setLoading(true);
     setNotFollowingBack([]);
@@ -97,20 +99,21 @@ export default function Home() {
     setLoading(false);
   };
 
+  // ✅ Arayüz
   return (
     <div className="p-6 max-w-5xl mx-auto text-center">
       <h1 className="text-3xl md:text-4xl font-extrabold mb-6 text-purple-700">
-        Farcaster Unloop Tracker
+        Farcaster Unloop Mini App
       </h1>
 
       {!ready && (
         <p className="text-gray-500 mb-4 animate-pulse">
-          Initializing Frame SDK ⏳
+          Initializing Mini App SDK ⏳
         </p>
       )}
       {ready && (
         <p className="text-green-600 mb-4">
-          ✅ Frame SDK initialized successfully!
+          ✅ Mini App SDK initialized successfully!
         </p>
       )}
 
