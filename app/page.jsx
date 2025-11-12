@@ -1,6 +1,5 @@
 'use client';
 import { useEffect, useState } from "react";
-import { init } from "@farcaster/frame-sdk";
 
 export default function Home() {
     const [fid, setFid] = useState('19267');
@@ -10,25 +9,22 @@ export default function Home() {
     const [loading, setLoading] = useState(false);
     const [ready, setReady] = useState(false);
 
-    // ✅ Farcaster Frame SDK başlatma
+    // ✅ Farcaster SDK - Dinamik import (init yerine actions.ready)
     useEffect(() => {
-        const setupSDK = async () => {
-            try {
-                const sdk = await init();
-                setTimeout(() => {
-                    sdk.actions.ready();
-                    setReady(true);
-                    console.log("✅ Farcaster Frame SDK is ready!");
-                }, 300);
-            } catch (err) {
-                console.error("❌ SDK init error:", err);
-            }
-        };
-
-        if (typeof window !== "undefined") setupSDK();
+        if (typeof window !== "undefined") {
+            import('@farcaster/frame-sdk')
+                .then(({ actions }) => {
+                    setTimeout(() => {
+                        actions.ready();
+                        setReady(true);
+                        console.log("✅ Farcaster Frame SDK ready()");
+                    }, 300);
+                })
+                .catch(err => console.warn("⚠️ SDK load error:", err));
+        }
     }, []);
 
-    // ✅ Takipçi ve takip edilen verilerini çekme
+    // ✅ API'den takipçi verilerini çekme
     const fetchAllPages = async (endpoint, fid) => {
         let allUsers = [];
         let cursor = null;
@@ -63,7 +59,6 @@ export default function Home() {
         return allUsers;
     };
 
-    // ✅ Ana kontrol fonksiyonu
     const checkData = async () => {
         setLoading(true);
         setNotFollowingBack([]);
@@ -91,7 +86,6 @@ export default function Home() {
         setLoading(false);
     };
 
-    // ✅ Arayüz
     return (
         <div className="p-6 max-w-5xl mx-auto text-center">
             <h1 className="text-3xl md:text-4xl font-extrabold mb-6 text-purple-700">
