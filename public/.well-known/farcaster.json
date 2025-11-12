@@ -1,19 +1,22 @@
 {
-    "name": "Farcaster Unloop Tracker",
-    "description": "Track who follows you and who doesn’t on Farcaster.",
-    "url": "https://unloop-mini.vercel.app/",
-    "icon_url": "https://unloop-mini.vercel.app/icon.png",
-    "developer": {
-        "name": "0xSedat",
-        "url": "https://github.com/physicist92"
-    },
-    "app": {
-        "category": "social",
-        "permissions": [],
-        "platforms": [ "web" ]
-    }
-}
-{
+  "name": "Farcaster Unloop Tracker",
+  "description": "Track who follows you and who doesn’t on Farcaster.",
+  "url": "https://unloop-mini.vercel.app/",
+  "icon_url": "https://unloop-mini.vercel.app/icon.png",
+  "developer": {
+    "name": "0xSedat",
+    "url": "https://github.com/physicist92"
+  },
+  "app": {
+    "category": "social",
+    "permissions": [],
+    "platforms": ["web"]
+  },
+  "frame": {
+    "name": "Farcaster Unloop Frame",
+    "home_url": "https://unloop-mini.vercel.app/api/frame",
+    "image_url": "https://unloop-mini.vercel.app/frame-images/active.png"
+  },
   "accountAssociation": {
     "header": "eyJmaWQiOjE5MjY3LCJ0eXBlIjoiYXV0aCIsImtleSI6IjB4ODk3MjVCNTQ5NjVjNzA2MTAwQTJCMjRmNzhBRWMyNjhBREMyNUQzQiJ9",
     "payload": "eyJkb21haW4iOiJ1bmxvb3AtbWluaS52ZXJjZWwuYXBwIn0",
