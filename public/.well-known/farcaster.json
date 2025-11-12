@@ -13,9 +13,12 @@
     "platforms": ["web"]
   },
   "frame": {
+    "version": "1",
     "name": "Farcaster Unloop Frame",
+    "icon_url": "https://unloop-mini.vercel.app/icon.png",
     "home_url": "https://unloop-mini.vercel.app/api/frame",
-    "image_url": "https://unloop-mini.vercel.app/frame-images/active.png"
+    "image_url": "https://unloop-mini.vercel.app/frame-images/active.png",
+    "button_title": "Check Followers"
   },
   "accountAssociation": {
     "header": "eyJmaWQiOjE5MjY3LCJ0eXBlIjoiYXV0aCIsImtleSI6IjB4ODk3MjVCNTQ5NjVjNzA2MTAwQTJCMjRmNzhBRWMyNjhBREMyNUQzQiJ9",
