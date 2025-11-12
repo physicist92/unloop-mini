@@ -1,6 +1,6 @@
 'use client';
-import { useState, useEffect } from 'react';
-import { actions } from '@farcaster/frame-sdk'; // Farcaster SDK
+import { useEffect, useState } from "react";
+import { init } from "@farcaster/frame-sdk";
 
 export default function Home() {
     const [fid, setFid] = useState('19267');
@@ -8,16 +8,27 @@ export default function Home() {
     const [notFollowingBack, setNotFollowingBack] = useState([]);
     const [theyDontFollow, setTheyDontFollow] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [ready, setReady] = useState(false);
 
-   useEffect(() => {
-    if (typeof window !== "undefined") {
-        import('@farcaster/frame-sdk').then(({ actions }) => {
-            actions.ready();
-            console.log("✅ Farcaster frame ready()");
-        }).catch(err => console.warn("⚠️ SDK load error:", err));
-    }
-}, []);
+    // ✅ Farcaster Frame SDK başlatma
+    useEffect(() => {
+        const setupSDK = async () => {
+            try {
+                const sdk = await init();
+                setTimeout(() => {
+                    sdk.actions.ready();
+                    setReady(true);
+                    console.log("✅ Farcaster Frame SDK is ready!");
+                }, 300);
+            } catch (err) {
+                console.error("❌ SDK init error:", err);
+            }
+        };
 
+        if (typeof window !== "undefined") setupSDK();
+    }, []);
+
+    // ✅ Takipçi ve takip edilen verilerini çekme
     const fetchAllPages = async (endpoint, fid) => {
         let allUsers = [];
         let cursor = null;
@@ -52,6 +63,7 @@ export default function Home() {
         return allUsers;
     };
 
+    // ✅ Ana kontrol fonksiyonu
     const checkData = async () => {
         setLoading(true);
         setNotFollowingBack([]);
@@ -79,11 +91,23 @@ export default function Home() {
         setLoading(false);
     };
 
+    // ✅ Arayüz
     return (
         <div className="p-6 max-w-5xl mx-auto text-center">
             <h1 className="text-3xl md:text-4xl font-extrabold mb-6 text-purple-700">
                 Farcaster Unloop Tracker
             </h1>
+
+            {!ready && (
+                <p className="text-gray-500 mb-4 animate-pulse">
+                    Initializing Frame SDK ⏳
+                </p>
+            )}
+            {ready && (
+                <p className="text-green-600 mb-4">
+                    ✅ Frame SDK initialized successfully!
+                </p>
+            )}
 
             <div className="flex justify-center mb-4">
                 <input
