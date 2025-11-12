@@ -1,40 +1,49 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { actions } from '@farcaster/miniapp-sdk';
+import { actions } from '@farcaster/miniapp-sdk/actions'; // ✅ Doğru import — yeni SDK yapısı
 
 export default function Home() {
   const [ready, setReady] = useState(false);
-  const [fid, setFid] = useState('19267');
-  const [stats, setStats] = useState({ followers: 0, following: 0 });
-  const [notFollowingBack, setNotFollowingBack] = useState([]);
-  const [theyDontFollow, setTheyDontFollow] = useState([]);
-  const [loading, setLoading] = useState(false);
 
-  // ✅ Farcaster Mini App SDK initialization
   useEffect(() => {
     const initMiniApp = async () => {
       try {
         console.log("🔄 Initializing Farcaster Mini App SDK...");
 
-        // Farcaster sandbox yüklenince ready çağrılır
-        const handleReady = () => {
-          actions.ready();
-          console.log("✅ Mini App is ready!");
-          setReady(true);
-        };
+        // SDK hazır olduğunda ready() çağır
+        actions.ready(); // ✅ SDK'ya 'hazırım' sinyali gönderilir
 
-        if (document.readyState === "complete") handleReady();
-        else {
-          window.addEventListener("load", handleReady);
-          return () => window.removeEventListener("load", handleReady);
-        }
+        console.log("✅ Mini App is ready!");
+        setReady(true);
       } catch (err) {
         console.error("❌ SDK initialization failed:", err);
       }
     };
 
-    if (typeof window !== "undefined") initMiniApp();
+    // Sadece tarayıcı ortamında çalıştır
+    if (typeof window !== "undefined") {
+      initMiniApp();
+    }
   }, []);
+
+  return (
+    <main className="p-10 text-center">
+      <h1 className="text-3xl font-bold text-purple-600">
+        Farcaster Unloop Mini App
+      </h1>
+
+      {!ready ? (
+        <p className="text-gray-500 mt-3 animate-pulse">
+          Initializing Mini App SDK ⏳
+        </p>
+      ) : (
+        <p className="text-green-600 mt-3">
+          ✅ Frame SDK initialized successfully!
+        </p>
+      )}
+    </main>
+  );
+}
 
   // ✅ Tüm takipçileri çekme fonksiyonu
   const fetchAllPages = async (endpoint, fid) => {
