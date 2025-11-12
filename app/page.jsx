@@ -1,5 +1,6 @@
-﻿'use client';
-import { useState } from 'react';
+'use client';
+import { useState, useEffect } from 'react';
+import { actions } from '@farcaster/frame-sdk'; // Farcaster SDK
 
 export default function Home() {
     const [fid, setFid] = useState('19267');
@@ -7,6 +8,16 @@ export default function Home() {
     const [notFollowingBack, setNotFollowingBack] = useState([]);
     const [theyDontFollow, setTheyDontFollow] = useState([]);
     const [loading, setLoading] = useState(false);
+
+    // ✅ Farcaster ready sinyali
+    useEffect(() => {
+        try {
+            actions.ready(); // SDK'ya “uygulama hazır” sinyali gönder
+            console.log("Farcaster Frame ready!");
+        } catch (err) {
+            console.warn("Farcaster SDK not initialized:", err);
+        }
+    }, []);
 
     const fetchAllPages = async (endpoint, fid) => {
         let allUsers = [];
