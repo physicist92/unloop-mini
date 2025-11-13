@@ -1,28 +1,28 @@
 {
-  "name": "Farcaster Unloop Tracker",
-  "description": "Track who follows you and who doesn’t on Farcaster.",
-  "url": "https://unloop-mini.vercel.app/",
-  "icon_url": "https://raw.githubusercontent.com/physicist92/Unloop-assets/refs/heads/main/unlooplogo.png",
-  "developer": {
-    "name": "0xSedat",
-    "url": "https://github.com/physicist92"
-  },
-  "app": {
-    "category": "social",
-    "permissions": [],
-    "platforms": ["web"]
-  },
-  "frame": {
-    "version": "1",
-    "name": "Farcaster Unloop Frame",
-    "iconUrl": "https://raw.githubusercontent.com/physicist92/Unloop-assets/refs/heads/main/unlooplogo.png",
-    "homeUrl": "https://unloop-mini.vercel.app/api/frame",
-    "imageUrl": "https://unloop-mini.vercel.app/frame-images/active.png",
-    "buttonTitle": "Check Followers"
-  },
-  "accountAssociation": {
-    "header": "eyJmaWQiOjE5MjY3LCJ0eXBlIjoiYXV0aCIsImtleSI6IjB4ODk3MjVCNTQ5NjVjNzA2MTAwQTJCMjRmNzhBRWMyNjhBREMyNUQzQiJ9",
-    "payload": "eyJkb21haW4iOiJ1bmxvb3AtbWluaS52ZXJjZWwuYXBwIn0",
-    "signature": "AXULQGkUQVgRbgimszAC9ceZjUGvuX5F/gAbU2hwwf9zwgPEwWf6akWlQPmalfdmJwtuVkMnBd5nvrt8+DkrfBs="
-  }
+    "name": "Farcaster Unloop Tracker",
+    "description": "Track who follows you and who doesn’t on Farcaster.",
+    "url": "https://unloop-mini.vercel.app/",
+    "icon_url": "https://raw.githubusercontent.com/physicist92/Unloop-assets/refs/heads/main/unlooplogo.png",
+    "developer": {
+        "name": "0xSedat",
+        "url": "https://github.com/physicist92"
+    },
+    "app": {
+        "category": "social",
+        "permissions": [],
+        "platforms": [ "web" ]
+    },
+    "frame": {
+        "version": "1",
+        "name": "Farcaster Unloop Frame",
+        "iconUrl": "https://raw.githubusercontent.com/physicist92/Unloop-assets/refs/heads/main/unlooplogo.png",
+        "homeUrl": "https://unloop-mini.vercel.app/api/frame",
+        "imageUrl": "https://unloop-mini.vercel.app/frame-images/active.png",
+        "buttonTitle": "Check Followers"
+    },
+    "accountAssociation": {
+        "header": "eyJmaWQiOjE5MjY3LCJ0eXBlIjoiYXV0aCIsImtleSI6IjB4ODk3MjVCNTQ5NjVjNzA2MTAwQTJCMjRmNzhBRWMyNjhBREMyNUQzQiJ9",
+        "payload": "eyJkb21haW4iOiJ1bmxvb3AtbWluaS52ZXJjZWwuYXBwIn0",
+        "signature": "AXULQGkUQVgRbgimszAC9ceZjUGvuX5F/gAbU2hwwf9zwgPEwWf6akWlQPmalfdmJwtuVkMnBd5nvrt8+DkrfBs="
+    }
 }
