@@ -1,44 +1,36 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { actions } from '@farcaster/miniapp-sdk'; // ✅ DOĞRU IMPORT
+import { useState, useEffect } from "react";
+import { miniApp } from "@farcaster/miniapp-sdk";  // ✅ DOĞRU IMPORT
 
 export default function Home() {
-    // Mini App SDK hazır mı?
     const [ready, setReady] = useState(false);
-
-    // FID işlemleri için state'ler
     const [fid, setFid] = useState("");
     const [loading, setLoading] = useState(false);
     const [stats, setStats] = useState({ followers: 0, following: 0 });
-
     const [notFollowingBack, setNotFollowingBack] = useState([]);
     const [theyDontFollow, setTheyDontFollow] = useState([]);
 
     // ------------------------------------------------
-    // ✅ MINI APP SDK INITIALIZATION
+    // MINI APP INITIALIZATION
     // ------------------------------------------------
     useEffect(() => {
-        const initMiniApp = async () => {
-            try {
-                console.log("🔄 Initializing Farcaster Mini App SDK...");
+        if (typeof window === "undefined") return;
 
-                actions.ready(); // ✔ Farcaster'a “hazırım” sinyali gönderilir
+        try {
+            console.log("🔄 Initializing Mini App...");
 
-                console.log("✅ Mini App is ready!");
-                setReady(true);
-            } catch (err) {
-                console.error("❌ SDK initialization failed:", err);
-            }
-        };
+            miniApp.actions.ready();   // ✅ DOĞRU KULLANIM
 
-        if (typeof window !== "undefined") {
-            initMiniApp();
+            console.log("✅ Mini App ready sent!");
+            setReady(true);
+        } catch (err) {
+            console.error("❌ Mini App init failed:", err);
         }
     }, []);
 
     // ------------------------------------------------
-    // ✅ FOLLOWERS / FOLLOWING VERİLERİNİ ÇEKEN FONKSİYON
+    // FETCH FUNCTIONS
     // ------------------------------------------------
     const fetchAllPages = async (endpoint, fid) => {
         let allUsers = [];
@@ -47,11 +39,9 @@ export default function Home() {
         try {
             while (true) {
                 const url = new URL(
-                    `/api/${endpoint}?fid=${fid}${cursor ? `&cursor=${encodeURIComponent(cursor)}` : ""
-                    }`,
+                    `/api/${endpoint}?fid=${fid}${cursor ? `&cursor=${cursor}` : ""}`,
                     window.location.origin
                 );
-
                 const res = await fetch(url);
                 const data = await res.json();
 
@@ -66,9 +56,8 @@ export default function Home() {
                 });
 
                 allUsers = [...allUsers, ...users];
-
-                if (data.next?.cursor) cursor = data.next.cursor;
-                else break;
+                if (!data.next?.cursor) break;
+                cursor = data.next.cursor;
             }
         } catch (err) {
             console.error(`Error fetching ${endpoint}:`, err);
@@ -78,186 +67,81 @@ export default function Home() {
     };
 
     // ------------------------------------------------
-    // ✅ KARŞILAŞTIRMA
+    // CHECK DATA
     // ------------------------------------------------
     const checkData = async () => {
         if (!fid) return alert("Please enter your FID!");
 
         setLoading(true);
-        setNotFollowingBack([]);
-        setTheyDontFollow([]);
 
-        try {
-            const [followers, following] = await Promise.all([
-                fetchAllPages("followers", fid),
-                fetchAllPages("following", fid),
-            ]);
+        const [followers, following] = await Promise.all([
+            fetchAllPages("followers", fid),
+            fetchAllPages("following", fid),
+        ]);
 
-            const followerIds = followers.map((u) => u.fid);
-            const followingIds = following.map((u) => u.fid);
+        const followerIds = followers.map((u) => u.fid);
+        const followingIds = following.map((u) => u.fid);
 
-            const notFollowingBackList = following.filter(
-                (u) => !followerIds.includes(u.fid)
-            );
-            const theyDontFollowYouList = followers.filter(
-                (u) => !followingIds.includes(u.fid)
-            );
+        setStats({
+            followers: followers.length,
+            following: following.length,
+        });
 
-            setStats({
-                followers: followers.length,
-                following: following.length,
-            });
+        setNotFollowingBack(
+            following.filter((u) => !followerIds.includes(u.fid))
+        );
 
-            setNotFollowingBack(notFollowingBackList);
-            setTheyDontFollow(theyDontFollowYouList);
-        } catch (e) {
-            console.error("Error:", e);
-        }
+        setTheyDontFollow(
+            followers.filter((u) => !followingIds.includes(u.fid))
+        );
 
         setLoading(false);
     };
 
     // ------------------------------------------------
-    // 🚀 UI / FRONTEND
+    // UI
     // ------------------------------------------------
     return (
         <div className="p-6 max-w-5xl mx-auto text-center">
-            <h1 className="text-3xl md:text-4xl font-extrabold mb-6 text-purple-700">
+            <h1 className="text-3xl font-bold text-purple-700">
                 Farcaster Unloop Mini App
             </h1>
 
             {!ready ? (
-                <p className="text-gray-500 mb-4 animate-pulse">
+                <p className="text-gray-500 animate-pulse">
                     Initializing Mini App SDK ⏳
                 </p>
             ) : (
-                <p className="text-green-600 mb-4">
-                    ✅ Mini App SDK initialized successfully!
+                <p className="text-green-600">
+                    ✅ Mini App SDK initialized!
                 </p>
             )}
 
-            {/* FID Input */}
-            <div className="flex justify-center mb-4">
+            <div className="flex justify-center mt-4">
                 <input
-                    className="border border-gray-300 p-2 rounded-lg w-64 focus:outline-none focus:ring-2 focus:ring-purple-400"
                     value={fid}
                     onChange={(e) => setFid(e.target.value)}
                     placeholder="Enter your FID"
+                    className="border p-2 rounded-lg w-60"
                 />
                 <button
                     onClick={checkData}
-                    className="bg-purple-600 hover:bg-purple-700 transition text-white px-5 py-2 rounded-lg ml-2"
+                    className="ml-2 bg-purple-600 text-white px-4 py-2 rounded-lg"
                 >
                     Check
                 </button>
             </div>
 
-            {loading && (
-                <p className="text-gray-400 animate-pulse">
-                    Fetching data... please wait ⏳
-                </p>
-            )}
+            {loading && <p className="mt-3 animate-pulse text-gray-400">Fetching...</p>}
 
             {!loading && stats.followers > 0 && (
-                <div className="mb-6">
-                    <p className="text-lg font-medium mb-1">
-                        👥 Followers: <b>{stats.followers}</b> &nbsp; | &nbsp; ➡️ Following:{" "}
+                <div className="mt-6">
+                    <p>
+                        👥 Followers: <b>{stats.followers}</b> | ➡️ Following:{" "}
                         <b>{stats.following}</b>
                     </p>
-                    <p className="text-gray-600 text-sm">
-                        🚫 Not following back: {notFollowingBack.length} &nbsp; | &nbsp; 👀
-                        They follow you, but you don’t: {theyDontFollow.length}
-                    </p>
-                </div>
-            )}
-
-            {/* Two-column results */}
-            {!loading && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-left">
-                    {/* NOT FOLLOWING BACK */}
-                    <div>
-                        <h2 className="text-xl font-semibold mb-3 text-pink-600">
-                            🚫 Not following back
-                        </h2>
-                        <ul className="space-y-3">
-                            {notFollowingBack.map((user) => (
-                                <li
-                                    key={user.fid}
-                                    className="flex items-center justify-between bg-gray-50 hover:bg-gray-100 transition rounded-xl p-2 shadow-sm"
-                                >
-                                    <div className="flex items-center space-x-3">
-                                        <img
-                                            src={user.pfp_url}
-                                            className="w-9 h-9 rounded-full border"
-                                            alt=""
-                                        />
-                                        <div>
-                                            <a
-                                                href={`https://warpcast.com/${user.username}`}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="font-medium hover:underline"
-                                            >
-                                                {user.display_name || user.username}
-                                            </a>
-                                            <p className="text-gray-500 text-sm">@{user.username}</p>
-                                        </div>
-                                    </div>
-                                    <a
-                                        href={`https://warpcast.com/${user.username}`}
-                                        target="_blank"
-                                        className="text-sm px-3 py-1 bg-pink-500 text-white rounded-lg hover:bg-pink-600"
-                                    >
-                                        Unfollow
-                                    </a>
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-
-                    {/* THEY FOLLOW YOU BUT YOU DON'T */}
-                    <div>
-                        <h2 className="text-xl font-semibold mb-3 text-purple-600">
-                            👀 They follow you, but you don’t
-                        </h2>
-                        <ul className="space-y-3">
-                            {theyDontFollow.map((user) => (
-                                <li
-                                    key={user.fid}
-                                    className="flex items-center justify-between bg-gray-50 hover:bg-gray-100 transition rounded-xl p-2 shadow-sm"
-                                >
-                                    <div className="flex items-center space-x-3">
-                                        <img
-                                            src={user.pfp_url}
-                                            className="w-9 h-9 rounded-full border"
-                                            alt=""
-                                        />
-                                        <div>
-                                            <a
-                                                href={`https://warpcast.com/${user.username}`}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="font-medium hover:underline"
-                                            >
-                                                {user.display_name || user.username}
-                                            </a>
-                                            <p className="text-gray-500 text-sm">@{user.username}</p>
-                                        </div>
-                                    </div>
-                                    <a
-                                        href={`https://warpcast.com/${user.username}`}
-                                        target="_blank"
-                                        className="text-sm px-3 py-1 bg-purple-500 text-white rounded-lg hover:bg-purple-600"
-                                    >
-                                        Follow
-                                    </a>
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
                 </div>
             )}
         </div>
     );
 }
-
