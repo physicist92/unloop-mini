@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { actions } from '@farcaster/miniapp-sdk/actions'; // ✅ Yeni SDK yapısı
+import { actions } from '@farcaster/miniapp-sdk'; // ✅ Doğru import
 
 export default function Home() {
   const [ready, setReady] = useState(false);
@@ -10,23 +10,19 @@ export default function Home() {
   const [theyDontFollow, setTheyDontFollow] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // ✅ SDK başlatma
+  // ✅ Farcaster Mini App SDK başlatma
   useEffect(() => {
-    const initMiniApp = async () => {
-      try {
-        console.log("🔄 Initializing Farcaster Mini App SDK...");
-        actions.ready(); // Farcaster Mini App SDK 'hazır' sinyali
-        console.log("✅ Mini App is ready!");
-        setReady(true);
-      } catch (err) {
-        console.error("❌ SDK initialization failed:", err);
-      }
-    };
-
-    if (typeof window !== "undefined") initMiniApp();
+    try {
+      console.log("🔄 Initializing Farcaster Mini App SDK...");
+      actions.ready(); // Mini App: “Hazırım” sinyali
+      console.log("✅ Mini App SDK is ready!");
+      setReady(true);
+    } catch (err) {
+      console.error("❌ SDK init error:", err);
+    }
   }, []);
 
-  // ✅ Tüm takipçileri çekme fonksiyonu
+  // ✅ Tüm follower/following sayfalarını çeken fonksiyon
   const fetchAllPages = async (endpoint, fid) => {
     let allUsers = [];
     let cursor = null;
@@ -40,7 +36,7 @@ export default function Home() {
         const res = await fetch(url);
         const data = await res.json();
 
-        const users = (data[endpoint] || data.result?.users || []).map((item) => {
+        const users = (data[endpoint] || data.result?.users || []).map(item => {
           const u = item.user || item;
           return {
             fid: u.fid,
@@ -61,7 +57,7 @@ export default function Home() {
     return allUsers;
   };
 
-  // ✅ Karşılaştırma fonksiyonu
+  // ✅ Analiz çalıştıran fonksiyon
   const checkData = async () => {
     setLoading(true);
     setNotFollowingBack([]);
@@ -70,28 +66,31 @@ export default function Home() {
     try {
       const [followers, following] = await Promise.all([
         fetchAllPages('followers', fid),
-        fetchAllPages('following', fid),
+        fetchAllPages('following', fid)
       ]);
 
-      const followerIds = followers.map((u) => u.fid);
-      const followingIds = following.map((u) => u.fid);
+      const followerIds = followers.map(u => u.fid);
+      const followingIds = following.map(u => u.fid);
 
-      const notFollowingBackList = following.filter((u) => !followerIds.includes(u.fid));
-      const theyDontFollowYouList = followers.filter((u) => !followingIds.includes(u.fid));
+      setStats({
+        followers: followers.length,
+        following: following.length
+      });
 
-      setStats({ followers: followers.length, following: following.length });
-      setNotFollowingBack(notFollowingBackList);
-      setTheyDontFollow(theyDontFollowYouList);
+      setNotFollowingBack(following.filter(u => !followerIds.includes(u.fid)));
+      setTheyDontFollow(followers.filter(u => !followingIds.includes(u.fid)));
+
     } catch (e) {
-      console.error('Error:', e);
+      console.error(e);
     }
 
     setLoading(false);
   };
 
-  // ✅ Arayüz
+  // ✅ UI
   return (
     <div className="p-6 max-w-5xl mx-auto text-center">
+
       <h1 className="text-3xl md:text-4xl font-extrabold mb-6 text-purple-700">
         Farcaster Unloop Mini App
       </h1>
@@ -101,6 +100,7 @@ export default function Home() {
           Initializing Mini App SDK ⏳
         </p>
       )}
+
       {ready && (
         <p className="text-green-600 mb-4">
           ✅ Mini App SDK initialized successfully!
@@ -109,14 +109,14 @@ export default function Home() {
 
       <div className="flex justify-center mb-4">
         <input
-          className="border border-gray-300 p-2 rounded-lg w-64 focus:outline-none focus:ring-2 focus:ring-purple-400"
+          className="border border-gray-300 p-2 rounded-lg w-64"
           value={fid}
-          onChange={(e) => setFid(e.target.value)}
+          onChange={e => setFid(e.target.value)}
           placeholder="Enter your FID"
         />
         <button
           onClick={checkData}
-          className="bg-purple-600 hover:bg-purple-700 transition text-white px-5 py-2 rounded-lg ml-2"
+          className="bg-purple-600 hover:bg-purple-700 text-white px-5 py-2 rounded-lg ml-2"
         >
           Check
         </button>
@@ -127,53 +127,39 @@ export default function Home() {
       {!loading && stats.followers > 0 && (
         <div className="mb-6">
           <p className="text-lg font-medium mb-1">
-            👥 Followers: <b>{stats.followers}</b> &nbsp; | &nbsp; ➡️ Following:{' '}
-            <b>{stats.following}</b>
+            👥 Followers: <b>{stats.followers}</b>
+            &nbsp; | &nbsp;
+            ➡️ Following: <b>{stats.following}</b>
           </p>
           <p className="text-gray-600 text-sm">
-            🚫 Not following back: {notFollowingBack.length} &nbsp; | &nbsp; 👀 They follow you, but
-            you don’t: {theyDontFollow.length}
+            🚫 Not following back: {notFollowingBack.length}
+            &nbsp; | &nbsp;
+            👀 They follow you but you don’t: {theyDontFollow.length}
           </p>
         </div>
       )}
 
       {!loading && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-left">
-          {/* 🚫 Not following back */}
+
+          {/* Not following back */}
           <div>
-            <h2 className="text-xl font-semibold mb-3 text-pink-600 flex items-center">
+            <h2 className="text-xl font-semibold mb-3 text-pink-600">
               🚫 Not following back
             </h2>
             <ul className="space-y-3">
-              {notFollowingBack.map((user) => (
-                <li
-                  key={user.fid}
-                  className="flex items-center justify-between bg-gray-50 hover:bg-gray-100 transition rounded-xl p-2 shadow-sm"
-                >
+              {notFollowingBack.map(user => (
+                <li key={user.fid} className="flex items-center justify-between bg-gray-50 p-2 rounded-xl shadow-sm">
                   <div className="flex items-center space-x-3">
-                    <img
-                      src={user.pfp_url}
-                      alt={user.username}
-                      className="w-9 h-9 rounded-full border"
-                    />
+                    <img src={user.pfp_url} className="w-9 h-9 rounded-full border" />
                     <div>
-                      <a
-                        href={`https://warpcast.com/${user.username}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="font-medium hover:underline"
-                      >
+                      <a href={`https://warpcast.com/${user.username}`} target="_blank" className="font-medium hover:underline">
                         {user.display_name || user.username}
                       </a>
                       <p className="text-gray-500 text-sm">@{user.username}</p>
                     </div>
                   </div>
-                  <a
-                    href={`https://warpcast.com/${user.username}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-sm px-3 py-1 bg-pink-500 text-white rounded-lg hover:bg-pink-600 transition"
-                  >
+                  <a href={`https://warpcast.com/${user.username}`} target="_blank" className="text-sm px-3 py-1 bg-pink-500 text-white rounded-lg">
                     Unfollow
                   </a>
                 </li>
@@ -181,49 +167,34 @@ export default function Home() {
             </ul>
           </div>
 
-          {/* 👀 They follow you but you don’t */}
+          {/* They follow you but you don't */}
           <div>
-            <h2 className="text-xl font-semibold mb-3 text-purple-600 flex items-center">
+            <h2 className="text-xl font-semibold mb-3 text-purple-600">
               👀 They follow you, but you don’t
             </h2>
             <ul className="space-y-3">
-              {theyDontFollow.map((user) => (
-                <li
-                  key={user.fid}
-                  className="flex items-center justify-between bg-gray-50 hover:bg-gray-100 transition rounded-xl p-2 shadow-sm"
-                >
+              {theyDontFollow.map(user => (
+                <li key={user.fid} className="flex items-center justify-between bg-gray-50 p-2 rounded-xl shadow-sm">
                   <div className="flex items-center space-x-3">
-                    <img
-                      src={user.pfp_url}
-                      alt={user.username}
-                      className="w-9 h-9 rounded-full border"
-                    />
+                    <img src={user.pfp_url} className="w-9 h-9 rounded-full border" />
                     <div>
-                      <a
-                        href={`https://warpcast.com/${user.username}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="font-medium hover:underline"
-                      >
+                      <a href={`https://warpcast.com/${user.username}`} target="_blank" className="font-medium hover:underline">
                         {user.display_name || user.username}
                       </a>
                       <p className="text-gray-500 text-sm">@{user.username}</p>
                     </div>
                   </div>
-                  <a
-                    href={`https://warpcast.com/${user.username}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-sm px-3 py-1 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition"
-                  >
+                  <a href={`https://warpcast.com/${user.username}`} target="_blank" className="text-sm px-3 py-1 bg-purple-500 text-white rounded-lg">
                     Follow
                   </a>
                 </li>
               ))}
             </ul>
           </div>
+
         </div>
       )}
+
     </div>
   );
 }
