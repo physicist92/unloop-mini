@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from "react";
-import { miniApp } from "@farcaster/miniapp-sdk";  // ✅ DOĞRU IMPORT
+import { miniApp } from "@farcaster/miniapp-sdk";  // ✅ TEK DOĞRU IMPORT
 
 export default function Home() {
     const [ready, setReady] = useState(false);
@@ -19,9 +19,7 @@ export default function Home() {
 
         try {
             console.log("🔄 Initializing Mini App...");
-
             miniApp.actions.ready();   // ✅ DOĞRU KULLANIM
-
             console.log("✅ Mini App ready sent!");
             setReady(true);
         } catch (err) {
@@ -42,6 +40,7 @@ export default function Home() {
                     `/api/${endpoint}?fid=${fid}${cursor ? `&cursor=${cursor}` : ""}`,
                     window.location.origin
                 );
+
                 const res = await fetch(url);
                 const data = await res.json();
 
