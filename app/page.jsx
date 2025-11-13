@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { actions } from '@farcaster/miniapp-sdk/actions'; // ✔ Doğru import
+import { actions } from '@farcaster/miniapp-sdk'; // ✔ Doğru import
 
 export default function Home() {
     // UI State
